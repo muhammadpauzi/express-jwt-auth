@@ -12,7 +12,6 @@ const verifyJwtToken = async (req, res, next) => {
       process.env.JWT_SECRET_KEY,
       async (err, decodedJwtToken) => {
         if (err instanceof TokenExpiredError) {
-          console.log("TOKEN_WAS_EXPIRED");
           return res.status(401).json({ message: "TOKEN_WAS_EXPIRED" });
         }
 
@@ -55,9 +54,6 @@ const blockLoggedInUser = async (req, res, next) => {
       process.env.JWT_SECRET_KEY,
       async (err, decodedJwtToken) => {
         if (err) {
-          if (err instanceof TokenExpiredError) {
-            console.log("TOKEN_WAS_EXPIRED");
-          }
           console.log(err);
           return next();
         }
