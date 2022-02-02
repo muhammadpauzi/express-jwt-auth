@@ -1,4 +1,5 @@
 const { TokenExpiredError, ...jwt } = require("jsonwebtoken");
+const { apiResponse } = require("../helpers");
 const User = require("../models/User");
 
 const verifyJwtToken = async (req, res, next) => {
@@ -19,8 +20,12 @@ const verifyJwtToken = async (req, res, next) => {
           console.log(err);
           return apiResponse(res, 401, { message: "TOKEN_NOT_VALID" });
         }
-
-        const user = await User.findOne(decodedJwtToken.id);
+        console.log("+++++++++++++++++++++++++++++");
+        console.log(decodedJwtToken);
+        console.log(decodedJwtToken.user.id);
+        const user = await User.findOne({ _id: decodedJwtToken.user.id });
+        console.log(user);
+        console.log("+++++++++++++++++++++++++++++");
         if (!user)
           return apiResponse(res, 404, { message: "NO_USER_WITH_THE_TOKEN" });
 
@@ -59,7 +64,7 @@ const blockLoggedInUser = async (req, res, next) => {
           return next();
         }
 
-        const user = await User.findOne(decodedJwtToken.id);
+        const user = await User.findOne({ _id: decodedJwtToken.user.id });
         if (user && user?.sessionId) {
           return apiResponse(res, 403, {
             message: "THE_USER_ALREADY_LOGGED_IN",

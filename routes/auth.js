@@ -18,7 +18,7 @@ router.post("/login", blockLoggedInUser, async (req, res) => {
       password,
     });
     // username or password are not registered on database
-    if (!user) return apiResponse(res, 200, { message: "CREDENTIALS_ERROR" });
+    if (!user) return apiResponse(res, 401, { message: "CREDENTIALS_ERROR" });
     // for securing jwt -> pzn video php jwt ngobar
     const sessionId = await randomKey();
     await User.updateOne(
@@ -38,6 +38,8 @@ router.post("/login", blockLoggedInUser, async (req, res) => {
         expiresIn: remember_me ? "5d" : "1d",
       }
     );
+
+    console.log(jwt.decode(payload));
 
     res.cookie("token", payload, { httpOnly: true });
 
@@ -114,7 +116,9 @@ router.delete("/logout", verifyJwtToken, async (req, res) => {
 });
 
 router.get("/csrf-token", (req, res) => {
-  res.cookie("x-csrf-token", req.csrfToken());
+  res.cookie("x-csrf-token", req.csrfToken(), {
+    httpOnly: true,
+  });
   return apiResponse(res, 200, { csrfToken: req.csrfToken() });
 });
 
