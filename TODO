@@ -1,0 +1,4 @@
+create jwt token
+csrf-token every request from client (csurf
+)
+jwt in cookie
