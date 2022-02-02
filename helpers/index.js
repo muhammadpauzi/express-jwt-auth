@@ -3,14 +3,18 @@ const User = require("../models/User");
 
 const validateBodyUser = (req, res) => {
   const { username = "", password = "" } = req.body;
+  let errors = {};
+  if (!username) {
+    errors.username = "USERNAME_REQUIRED";
+  }
+  if (!password) {
+    errors.password = "PASSWORD_REQUIRED";
+  }
 
   if (!username || !password) {
     return res.status(422).json({
       message: "VALIDATION_ERROR",
-      errors: {
-        username: "USERNAME_REQUIRED",
-        password: "PASSWORD_REQUIRED",
-      },
+      errors,
     });
   }
 
