@@ -1,4 +1,4 @@
-const { validateBodyUser, randomKey } = require("../helpers");
+const { validateBodyUser, randomKey, apiResponse } = require("../helpers");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { verifyJwtToken, blockLoggedInUser } = require("../middlewares");
@@ -18,7 +18,7 @@ router.post("/login", blockLoggedInUser, async (req, res) => {
       password,
     });
     // username or password are not registered on database
-    if (!user) return res.status(401).json({ message: "CREDENTIALS_ERROR" });
+    if (!user) return apiResponse(res, 200, { message: "CREDENTIALS_ERROR" });
     // for securing jwt -> pzn video php jwt ngobar
     const sessionId = await randomKey();
     await User.updateOne(
@@ -41,7 +41,7 @@ router.post("/login", blockLoggedInUser, async (req, res) => {
 
     res.cookie("token", payload, { httpOnly: true });
 
-    return res.status(200).json({
+    return apiResponse(res, 200, {
       message: "USER_HAS_BEEN_SUCESSFULLY_LOGGED_IN",
       user: {
         id: user.id,
@@ -50,9 +50,10 @@ router.post("/login", blockLoggedInUser, async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res
-      .status(500)
-      .json({ message: "SERVER_ERROR", error_message: error.message });
+    return apiResponse(res, 500, {
+      message: "SERVER_ERROR",
+      error_message: error.message,
+    });
   }
 });
 
@@ -64,14 +65,14 @@ router.post("/register", blockLoggedInUser, async (req, res) => {
       username: requestUsername,
     });
 
-    if (user) return res.status(409).json({ message: "USER_ALREADY_EXISTS" });
+    if (user) return apiResponse(res, 409, { message: "USER_ALREADY_EXISTS" });
 
     const { _id: id, username } = await User.create({
       username: requestUsername,
       password,
     });
 
-    return res.status(201).json({
+    return apiResponse(res, 201, {
       message: "USER_HAS_BEEN_SUCCESSFULLY_REGISTERED",
       user: {
         id,
@@ -80,9 +81,10 @@ router.post("/register", blockLoggedInUser, async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res
-      .status(500)
-      .json({ message: "SERVER_ERROR", error_message: error.message });
+    return apiResponse(res, 500, {
+      message: "SERVER_ERROR",
+      error_message: error.message,
+    });
   }
 });
 
@@ -99,20 +101,21 @@ router.delete("/logout", verifyJwtToken, async (req, res) => {
     // reset token in cookie
     res.cookie("token", "");
 
-    return res
-      .status(200)
-      .json({ message: "USER_HAS_BEEN_SUCCESSFULLY_LOGGED_OUT" });
+    return apiResponse(res, 200, {
+      message: "USER_HAS_BEEN_SUCCESSFULLY_LOGGED_OUT",
+    });
   } catch (error) {
     console.log(error);
-    return res
-      .status(500)
-      .json({ message: "SERVER_ERROR", error_message: error.message });
+    return apiResponse(res, 500, {
+      message: "SERVER_ERROR",
+      error_message: error.message,
+    });
   }
 });
 
 router.get("/csrf-token", (req, res) => {
   res.cookie("x-csrf-token", req.csrfToken());
-  res.json({ csrfToken: req.csrfToken() });
+  return apiResponse(res, 200, { csrfToken: req.csrfToken() });
 });
 
 module.exports = router;

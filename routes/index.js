@@ -3,7 +3,7 @@ const { verifyJwtToken } = require("../middlewares");
 const router = require("express").Router();
 
 router.get("/", verifyJwtToken, (req, res) => {
-  return res.status(200).json({ message: "SUCCESS" });
+  return apiResponse(res, 200, { message: "SUCCESS" });
 });
 
 module.exports = router;

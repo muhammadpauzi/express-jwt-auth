@@ -26,7 +26,12 @@ const randomKey = (length = 10) => {
   });
 };
 
+const apiResponse = (res = {}, statusCode = 200, data = {}) => {
+  return res.status(statusCode).json(data);
+};
+
 module.exports = {
   validateBodyUser,
   randomKey,
+  apiResponse,
 };
