@@ -20,12 +20,9 @@ const verifyJwtToken = async (req, res, next) => {
           console.log(err);
           return apiResponse(res, 401, { message: "TOKEN_NOT_VALID" });
         }
-        console.log("+++++++++++++++++++++++++++++");
-        console.log(decodedJwtToken);
-        console.log(decodedJwtToken.user.id);
+
         const user = await User.findOne({ _id: decodedJwtToken.user.id });
-        console.log(user);
-        console.log("+++++++++++++++++++++++++++++");
+
         if (!user)
           return apiResponse(res, 404, { message: "NO_USER_WITH_THE_TOKEN" });
 

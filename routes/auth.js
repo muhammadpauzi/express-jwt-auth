@@ -39,8 +39,6 @@ router.post("/login", blockLoggedInUser, async (req, res) => {
       }
     );
 
-    console.log(jwt.decode(payload));
-
     res.cookie("token", payload, { httpOnly: true });
 
     return apiResponse(res, 200, {
